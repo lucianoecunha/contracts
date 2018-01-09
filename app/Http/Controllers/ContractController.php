@@ -51,14 +51,14 @@ class ContractController extends Controller
         if(!$exists)
 
         {
-         $contract->managers()->sync($request->manager_id);
+         $contract->managers()->attach($request->manager_id);
          return view('contracts.show',compact('contract'));
      }
 
      else 
      {
-      //  $errors  =  "Gerente ja foi cadastrado";
-        return  view('contracts.edit',compact('contract', 'managers'));
+        $errors  =  collect(['manager_id' => 'servidor ja e gestor desse contrato']);
+        return  back()->withInput($request->all())->withErrors($errors);
     }
 
 
@@ -119,8 +119,8 @@ class ContractController extends Controller
             'object' => 'required',
             'kindofservice' => 'required',
             'source' => 'required',
-            'signature' => 'required',
-            'validity' => 'required',
+            'signature' => 'required|date_format:d/m/Y',
+            'validity' => 'required|date_format:d/m/Y',
             'value' => 'required'               
 
         ]);
@@ -172,6 +172,8 @@ class ContractController extends Controller
     {
 
 
+
+
      request()->validate([
 
         'year' => 'required',
@@ -180,13 +182,21 @@ class ContractController extends Controller
         'object' => 'required',
         'kindofservice' => 'required',
         'source' => 'required',
-        'signature' => 'required',
-        'validity' => 'required',
+        'signature' => 'required|date_format:d/m/Y',
+        'validity' => 'required|date_format:d/m/Y',
         'value' => 'required'               
 
     ]);
 
+
+
      $dataForm = $request->all();
+
+     $dataForm['signature'] = (new \DateTime($dataForm['signature']))->format('Y-m-d');
+
+     $dataForm['validity'] = (new \DateTime($dataForm['validity']))->format('Y-m-d');
+
+    
 
         // recupera o item
      $contract = Contract::find($id);
@@ -235,12 +245,6 @@ class ContractController extends Controller
 
             $managers = $contract->managers()->get();
 
-           
-
-           
-
-            
-
             if($contract->validity ==  $sixthMonth)
             {
 
@@ -248,7 +252,7 @@ class ContractController extends Controller
                 foreach ($managers as $manager) 
                 {
 
-                   $subject = "Informação de Vencimento de Contrato.";
+                   $subject = "Vencimento de Contrato.";
                    $text = "Entre em contato com o setor de contratos.";
                    $manager =  (object) $manager;
                    

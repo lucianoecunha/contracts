@@ -15,12 +15,12 @@
 
  @if(isset($errors) && count($errors)>0)
  <div class="alert alert-danger">
-  @foreach($errors->all() as $error)
-  <p>{{$error}}</p>
+  @foreach($errors->all() as $key => $value)
+  <p>{{$value}}</p>
   @endforeach
 </div>
 
-</div>
+
 
 @endif
 
@@ -97,7 +97,7 @@
           <label for="signature" class="col-lg-3 control-label">Assinatura</label> 
 
 
-          <input id="signature" type="text" class="form-control" id="datepicker" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask name="signature" value="{{ (old('signature'))? old('signature') : (($contract)? $contract->signature : null) }}" placeholder="signature">  
+          <input id="signature" type="text" class="form-control" id="datepicker" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask name="signature" value="{{ (old('signature'))? old('signature') : (($contract)?   date('d/m/Y', strtotime($contract->signature)) : null) }}" placeholder="signature">  
 
         </div>
 
@@ -105,7 +105,7 @@
           <label for="validity" class="col-lg-3 control-label">Validade</label> 
 
 
-          <input id="validity" type="text" class="form-control" id="datepicker" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask name="validity" value="{{ (old('validity'))? old('validity') : (($contract)? $contract->validity : null) }}" placeholder="validity">  
+          <input id="validity" type="text" class="form-control" id="datepicker" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask name="validity" value="{{ (old('validity'))? old('validity') : (($contract)?   date('d/m/Y', strtotime($contract->validity)) : null) }}" placeholder="validity">  
 
         </div> 
 
@@ -209,5 +209,7 @@
 </table>
 
 </div>
+
+
 
 @endsection

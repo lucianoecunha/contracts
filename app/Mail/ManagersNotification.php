@@ -32,7 +32,18 @@ class ManagersNotification extends Mailable
      */
     public function build()
     {
-         return $this->subject($this->subject)->view('email.managersnotification')->with('text', $this->text, $this->manager, $this->contract);
+         
+        return $this->view('email.managersnotification')
+                    ->from('contratos@lagoasanta.mg.gov.br')
+                    ->with(['subject' => $this->subject,
+                            'text' => $this->text,
+                            'manager' => $this->manager,
+                            'contract' => $this->contract
+
+                    ]);
+
+
+         //return $this->subject($this->subject)->view('email.managersnotification')->with('text', $this->text, $this->manager, $this->contract);
       
     }
 }

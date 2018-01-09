@@ -1,6 +1,5 @@
 @extends('layout')
 
-
 @section('content')
 
 @if(isset($errors) && count($errors)>0)
@@ -25,124 +24,99 @@
 
         </div>
 
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                 <strong>Ano:</strong>
+                 {{ $contract->year}}
+             </div>
+             <div class="col-md-4">
+                 <strong>Numero:</strong>
+                 {{ $contract->number}}
+             </div>
 
+              <div class="col-md-4">
+                 <strong>Notificar:</strong>
+                 @if($contract->notify == 1) Sim
+                 @else Não
+                 @endif                 
+             </div>
+         </div>
+         <div class="row">
+            <div class="col-md-12">
+               <strong>Partes:</strong>
 
-        <div class="col-xs-12 col-sm-12 col-md-12">
+               {{ $contract->parts}}
 
-            <div class="form-group">
+           </div>
+       </div>
+       <div class="row">
+        <div class="col-md-12">
+          <strong>Objeto:</strong>
 
-                <strong>Ano:</strong>
+          {{ $contract->object}}
 
-                {{ $contract->year}}
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+     <strong>Serviço:</strong>
 
-            </div>
+     {{ $contract->kindofservice}}
+ </div>
+ <div class="col-md-6">
+  <strong>Origem:</strong>
 
-            <div class="form-group">
+  {{ $contract->source}}
+</div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+      <strong>Assinatura:</strong>
 
-                <strong>Numero:</strong>
+      {{ ($contract->signature)? date('d/m/Y', strtotime($contract->signature)) : '' }}
+  </div>
+  <div class="col-md-6">
+      <strong>Validade:</strong>
+      {{ ($contract->validity)? date('d/m/Y', strtotime($contract->validity)) : '' }}    
+  </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+      <strong>Valor:</strong>
 
-                {{ $contract->number}}
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Partes:</strong>
-
-                {{ $contract->parts}}
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Objeto:</strong>
-
-                {{ $contract->object}}
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Serviço:</strong>
-
-                {{ $contract->kindofservice}}
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Origem:</strong>
-
-                {{ $contract->source}}
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Assinatura:</strong>
-
-                {{ ($contract->signature)? date('d/m/Y', strtotime($contract->signature)) : '' }}
-            
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Validade:</strong>
-                {{ ($contract->validity)? date('d/m/Y', strtotime($contract->validity)) : '' }}
-
-               
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Valor:</strong>
-
-                {{ $contract->value}}
-
-            </div>
-
-            <div class="form-group">
-
-                <strong>Gestor (es):</strong> <br>
-                @foreach ($contract->managers as $manager)
-
-                {{$manager->name}} <br>
-
-                @endforeach
-
-
-
-
-            </div>
-
-             <div class="form-group">
-
-                <strong>Setor (es):</strong> <br>
-                @foreach ($contract->sectors as $sector)
-
-                {{$sector->name}} <br>
-
-                @endforeach
-
-
-
-
-            </div>
-
-
-        </div>
-
-    </div>
-
+      {{ $contract->value}}
+  </div>
 </div>
 
 
+<div class="row">
+    <div class="col-md-12">
+     <strong>Gestor (es):</strong> <br>
+     @foreach ($contract->managers as $manager)
 
+     {{$manager->name}} <br>
 
+     @endforeach
+ </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    <strong>Setor (es):</strong> <br>
+ @foreach ($contract->sectors as $sector)
+
+ {{$sector->name}} <br>
+
+ @endforeach
+ </div>
+</div>
+</div>
 
 </div>
 
+</div>
+
+</div>
 
 @endsection
