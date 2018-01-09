@@ -77,7 +77,7 @@
         $('#contracts-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: 'http://desenv.intra/contracts/get_datatable',
+            ajax: 'http://192.168.33.10/contracts/get_datatable',
             columns: [
             {data: 'id'},
             {data: 'year'},

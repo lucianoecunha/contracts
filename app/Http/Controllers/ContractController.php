@@ -24,6 +24,14 @@ class ContractController extends Controller
     {
         $contracts = Contract::all();
 
+        foreach ($contracts as $contract) {
+             dd($contract);
+
+            $contract['validity'] = Carbon::createFromFormat('d/m/Y', $contract['validity']);           
+            
+        }
+
+
 
         return view('contracts.index',compact('contracts'))
 
@@ -34,7 +42,7 @@ class ContractController extends Controller
     {
 
         $managers = Manager::all();
-        $errors = [];
+      
 
         request()->validate([
 
@@ -51,12 +59,12 @@ class ContractController extends Controller
         if(!$exists)
 
         {
-         $contract->managers()->attach($request->manager_id);
-         return view('contracts.show',compact('contract'));
-     }
+           $contract->managers()->attach($request->manager_id);
+           return view('contracts.show',compact('contract'));
+       }
 
-     else 
-     {
+       else 
+       {
         $errors  =  collect(['manager_id' => 'servidor ja e gestor desse contrato']);
         return  back()->withInput($request->all())->withErrors($errors);
     }
@@ -64,31 +72,38 @@ class ContractController extends Controller
 
 }
 
-    public function remove_contract_manager(Request $request)
-    {
+public function remove_contract_manager(Request $request)
+{
 
-        $contract = Contract::find($request->id);
+    $contract = Contract::find($request->id);
 
-        $contract->managers()->detach($request->manager_id);
+    $contract->managers()->detach($request->manager_id);
 
-        return view('contracts.show',compact('contract'));
-    }
+    return view('contracts.show',compact('contract'));
+}
 
-    public function get_datatable()
-    {
+public function get_datatable()
+{
 
-        $contracts = Contract::select(['id', 'year', 'number', 'object', 'parts', 'validity']);
+    $contracts = Contract::select(['id', 
+                                    'year', 
+                                    'number', 
+                                    'object', 
+                                    'parts', 
+                                    'validity']);
 
-        return Datatables::of($contracts)
-        ->addColumn('action', function ($contracts) {
-            return '<a href="contracts/'.$contracts->id.'/edit" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>';
-        })
-        ->editColumn('id', 'ID: {{$id}}')
-        ->make(true);
+
+
+    return Datatables::of($contracts)
+    ->addColumn('action', function ($contracts) {
+        return '<a href="contracts/'.$contracts->id.'/edit" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>';
+    })
+    ->editColumn('id', 'ID: {{$id}}')
+    ->make(true);
 
 
            // return Datatables::of(Contract::query())->make(true);
-    }
+}
 
     /**
      * Show the form for creating a new resource.
@@ -119,17 +134,35 @@ class ContractController extends Controller
             'object' => 'required',
             'kindofservice' => 'required',
             'source' => 'required',
+            'notify' => 'required',
             'signature' => 'required|date_format:d/m/Y',
             'validity' => 'required|date_format:d/m/Y',
             'value' => 'required'               
 
         ]);
 
-        Contract::create($request->all());
+        $dataForm = $request->all();
 
-        return redirect()->route('contracts.index')
+        $dataForm['signature'] = Carbon::createFromFormat('d/m/Y', $dataForm['signature']);
+
+
+
+        $dataForm['validity'] = Carbon::createFromFormat('d/m/Y', $dataForm['validity']);
+
+        $create = Contract::create($dataForm);
+
+        if($create)
+
+            return redirect()->route('contracts.index')
 
         ->with('success','contract created successfully');
+
+        else {
+
+            $errors  =  collect(['number' => 'erro ao inserir contrato']);
+            return  back()->withInput($request->all())->withErrors($errors);
+
+        } 
     }
     
 
@@ -141,11 +174,11 @@ class ContractController extends Controller
      */
     public function show($id)
     {
-     $contract = Contract::find($id);
+       $contract = Contract::find($id);
         // $managers = $contract->managers()->pluck('name');
 
-     return view('contracts.show',compact('contract'));
-    }
+       return view('contracts.show',compact('contract'));
+   }
 
     /**
      * Show the form for editing the specified resource.
@@ -155,11 +188,11 @@ class ContractController extends Controller
      */
     public function edit($id)
     {
-     $contract = Contract::find($id);
-     $managers = Manager::all('id', 'name');
+       $contract = Contract::find($id);
+       $managers = Manager::all('id', 'name');
 
-     return view('contracts.edit',compact('contract','managers'));
- }
+       return view('contracts.edit',compact('contract','managers'));
+   }
 
     /**
      * Update the specified resource in storage.
@@ -173,7 +206,7 @@ class ContractController extends Controller
 
 
 
-     request()->validate([
+       request()->validate([
 
         'year' => 'required',
         'number' => 'required',
@@ -188,22 +221,17 @@ class ContractController extends Controller
 
     ]);
 
-     $dataForm = $request->all();
+       $dataForm = $request->all();
 
-     $dataForm['signature'] = (new \DateTime($dataForm['signature']))->format('Y-m-d');
 
-     $dataForm['validity'] = (new \DateTime($dataForm['validity']))->format('Y-m-d');
-
+       $dataForm['signature'] = Carbon::createFromFormat('d/m/Y', $dataForm['signature']);
 
 
 
-        // recupera o item
-     $contract = Contract::find($id);
-        // faz a verficacao do ativo
-       /* if(!isset($dataForm['active'])){
-            $dataForm['active'] = 0;
-        }*/
+       $dataForm['validity'] = Carbon::createFromFormat('d/m/Y', $dataForm['validity']);
 
+       $contract = Contract::find($id);
+    
         $update = $contract->update($dataForm);
         
         if($update)
@@ -251,23 +279,23 @@ class ContractController extends Controller
                 foreach ($managers as $manager) 
                 {
 
-                   $subject = "Vencimento de Contrato.";
-                   $text = "Entre em contato com o setor de contratos.";
-                   $manager =  (object) $manager;
-                   
-                   Mail::to($manager)->send(new ManagersNotification($manager,$contract,$subject,$text));
+                 $subject = "Vencimento de Contrato.";
+                 $text = "Entre em contato com o setor de contratos.";
+                 $manager =  (object) $manager;
+
+                 Mail::to($manager)->send(new ManagersNotification($manager,$contract,$subject,$text));
 
 
-                }
-            }
-
-
-                
-        }
+             }
+         }
 
 
 
-    }
+     }
 
-   
+
+
+ }
+
+
 }
