@@ -17,6 +17,7 @@ class Contract extends Model
         'source',
         'signature',
         'validity',
+        'notify',
         'value'      
 
     ];

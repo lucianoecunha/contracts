@@ -173,7 +173,6 @@ class ContractController extends Controller
 
 
 
-
      request()->validate([
 
         'year' => 'required',
@@ -184,11 +183,10 @@ class ContractController extends Controller
         'source' => 'required',
         'signature' => 'required|date_format:d/m/Y',
         'validity' => 'required|date_format:d/m/Y',
-        'value' => 'required'               
+        'value' => 'required', 
+        'notify' => 'required'              
 
     ]);
-
-
 
      $dataForm = $request->all();
 
@@ -196,7 +194,8 @@ class ContractController extends Controller
 
      $dataForm['validity'] = (new \DateTime($dataForm['validity']))->format('Y-m-d');
 
-    
+
+
 
         // recupera o item
      $contract = Contract::find($id);
@@ -245,7 +244,7 @@ class ContractController extends Controller
 
             $managers = $contract->managers()->get();
 
-            if($contract->validity ==  $sixthMonth)
+            if($contract->validity ==  $sixthMonth && $contract->notify == 1)
             {
 
 
